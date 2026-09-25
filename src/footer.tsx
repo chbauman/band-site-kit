@@ -45,6 +45,10 @@ interface FooterProps {
   logoAlt?: string;
   logoWidth?: number;
   logoHeight?: number;
+  /** Extra classes on the logo, e.g. `"invert dark:invert-0"` to flip a
+   * white-on-transparent logo to black for a light-background footer while
+   * keeping it white in dark mode. */
+  logoClassName?: string;
 }
 
 export function Footer({
@@ -54,6 +58,7 @@ export function Footer({
   logoAlt,
   logoWidth = 77,
   logoHeight = 50,
+  logoClassName = "",
 }: Readonly<FooterProps>) {
   return (
     <footer className="w-full border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300">
@@ -67,6 +72,7 @@ export function Footer({
             alt={logoAlt ?? copyrightName}
             width={logoWidth}
             height={logoHeight}
+            className={logoClassName}
             style={{ height: `${logoHeight}px`, width: "auto" }}
           />
         )}
