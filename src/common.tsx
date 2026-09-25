@@ -1,5 +1,5 @@
 export function VideoEmbed(
-  props: Readonly<{ youtubeId: string; time?: number }>,
+  props: Readonly<{ youtubeId: string; time?: number; title?: string }>,
 ) {
   let link = `https://www.youtube.com/embed/${props.youtubeId}`;
   if (props.time !== undefined) {
@@ -10,7 +10,7 @@ export function VideoEmbed(
       <iframe
         className="w-full h-full rounded-xl shadow-lg"
         src={link}
-        title="YouTube video"
+        title={props.title ?? "YouTube video"}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
       ></iframe>
