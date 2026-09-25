@@ -21,6 +21,9 @@ interface CoverProps {
   backgroundImageHeight?: number;
   /** Height reserved when there is no background image. */
   minHeightClassName?: string;
+  /** Vertical position (as a % from the top) of the logo/tagline overlay.
+   * Tune per photo so the text doesn't land awkwardly on a face. */
+  overlayTopPercent?: number;
 }
 
 export function Cover({
@@ -36,6 +39,7 @@ export function Cover({
   backgroundImageWidth,
   backgroundImageHeight,
   minHeightClassName = "h-30 md:h-60 xl:h-110",
+  overlayTopPercent = 50,
 }: Readonly<CoverProps>) {
   return (
     <section className="relative w-full overflow-hidden bg-black">
@@ -54,7 +58,10 @@ export function Cover({
         )}
         <div className="absolute inset-0 bg-black/50 dark:bg-black/60" />
 
-        <div className="absolute top-[50%] inset-x-0 z-10 px-4">
+        <div
+          className="absolute inset-x-0 z-10 px-4"
+          style={{ top: `${overlayTopPercent}%` }}
+        >
           <div className="max-w-6xl mx-auto text-center text-white -translate-y-1/2">
             <h1 className="sr-only">{bandName}</h1>
             <Image
