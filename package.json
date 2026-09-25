@@ -1,5 +1,5 @@
 {
-  "name": "@chbauman/band-site-kit",
+  "name": "@emeki/band-site-kit",
   "version": "0.1.0",
   "description": "Shared Next.js components for small band websites (agenda/gig list, cover, footer, section heading).",
   "type": "module",

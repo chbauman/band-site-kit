@@ -1,17 +1,18 @@
-# @chbauman/band-site-kit
+# @emeki/band-site-kit
 
 Shared Next.js (App Router) components for small band websites: a gig
 agenda backed by a public Google Sheet, a cover/hero section, a footer with
 social links, and a section heading.
 
-Ships as raw TypeScript/TSX source (no build step) — the consuming app's own
-Next.js compiler transpiles it. Add the package name to `transpilePackages`
-in `next.config.ts`:
+Ships compiled (`tsc` to `dist/*.js` + `.d.ts`) — install it like any other
+npm package, no bundler configuration needed on the consumer side. Also
+requires a Tailwind v4 `@source` directive so the consuming app's Tailwind
+build picks up the package's utility classes (Tailwind doesn't scan
+`node_modules` by default):
 
-```ts
-const nextConfig: NextConfig = {
-  transpilePackages: ["@chbauman/band-site-kit"],
-};
+```css
+/* app/globals.css */
+@source "../../node_modules/@emeki/band-site-kit/dist";
 ```
 
 ## Theming
@@ -37,7 +38,7 @@ between rebuilds:
 
 ```tsx
 // app/page.tsx — Server Component, no "use client"
-import { fetchAgenda, AgendaProvider, FutureEvents, PastEvents } from "@chbauman/band-site-kit";
+import { fetchAgenda, AgendaProvider, FutureEvents, PastEvents } from "@emeki/band-site-kit";
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv";
 
@@ -59,7 +60,7 @@ Cells in `Wo`/`Was` may contain a single Markdown-style link
 ## Cover
 
 ```tsx
-import { Cover } from "@chbauman/band-site-kit";
+import { Cover } from "@emeki/band-site-kit";
 
 <Cover
   bandName="My Band"
@@ -78,7 +79,7 @@ import { Cover } from "@chbauman/band-site-kit";
 ## Footer
 
 ```tsx
-import { Footer } from "@chbauman/band-site-kit";
+import { Footer } from "@emeki/band-site-kit";
 
 <Footer
   copyrightName="My Band"
