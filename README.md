@@ -61,6 +61,16 @@ e.g. `Datum | Ort | Was | Weiteres` works exactly like `Wann | Wo | Was`.
 Any cell may contain a single Markdown-style link (`[text](https://...)`),
 which renders as a real link.
 
+Optionally pass `metaSheetId` (to `fetchAgenda` and `AgendaProvider`) for a
+second, header-less, two-column (key, value) sheet to customize the
+empty-state message with a `no-gig-text` row:
+
+```tsx
+const META_URL = "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv";
+const agenda = await fetchAgenda(SHEET_URL, META_URL);
+// <AgendaProvider sheetId={SHEET_URL} metaSheetId={META_URL} initialData={agenda}>
+```
+
 ## Cover
 
 ```tsx
@@ -68,15 +78,32 @@ import { Cover } from "@emeki/band-site-kit";
 
 <Cover
   bandName="My Band"
-  logoSrc="/logo.png"
+  logoSrc="/logo.png" // omit for a text-only hero (see showTitle)
   logoAlt="My Band logo"
   logoWidth={2584}
   logoHeight={1682}
-  tagline="Optional tagline under the logo"
+  tagline="Optional tagline under the logo/title"
   backgroundImageSrc="/cover.jpg" // omit for a plain solid-color cover
   backgroundImageAlt="..."
   backgroundImageWidth={1750}
   backgroundImageHeight={667}
+/>
+```
+
+For a band whose hero is a text title rather than a wordmark logo image,
+render `bandName` visibly and put it on a readable panel over the photo:
+
+```tsx
+<Cover
+  bandName="My Band"
+  showTitle
+  tagline="Since 1980"
+  backgroundImageSrc="/cover.jpg"
+  backgroundImageWidth={1750}
+  backgroundImageHeight={667}
+  textPanelClassName="bg-white/80 dark:bg-black/70 rounded-2xl py-8 px-6"
+  textColorClassName="text-gray-900 dark:text-white"
+  imageOverlayClassName="bg-black/20"
 />
 ```
 

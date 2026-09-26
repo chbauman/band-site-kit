@@ -56,20 +56,24 @@ const AgendaContext = createContext<DateData | null>(null);
  */
 export function AgendaProvider({
   sheetId,
+  metaSheetId,
   initialData,
   children,
 }: Readonly<{
   sheetId: string;
+  /** Optional second sheet for a custom empty-agenda message; see
+   * `fetchAgenda`'s `metaSheetId` parameter. */
+  metaSheetId?: string;
   initialData: DateData;
   children: React.ReactNode;
 }>) {
   const [data, setData] = useState<DateData>(initialData);
 
   useEffect(() => {
-    fetchAgenda(sheetId)
+    fetchAgenda(sheetId, metaSheetId)
       .then(setData)
       .catch((err) => console.error("Error fetching sheet:", err));
-  }, [sheetId]);
+  }, [sheetId, metaSheetId]);
 
   return (
     <AgendaContext.Provider value={data}>{children}</AgendaContext.Provider>
@@ -85,16 +89,28 @@ function useAgendaData() {
 }
 
 export function FutureEvents() {
-  return <EventList data={useAgendaData().future} />;
+  const data = useAgendaData();
+  return <EventList data={data.future} noGigText={data.noGigText} />;
 }
 
 export function PastEvents() {
-  return <EventList data={useAgendaData().past} />;
+  const data = useAgendaData();
+  return <EventList data={data.past} noGigText={data.noGigText} />;
 }
 
-const EventList = ({ data }: { data: EventListType }) => {
+const EventList = ({
+  data,
+  noGigText,
+}: {
+  data: EventListType;
+  noGigText?: string;
+}) => {
   if (data.length == 0) {
-    return <p className="text-center">No upcoming gigs planned yet.</p>;
+    return (
+      <p className="text-center">
+        {noGigText ?? "No upcoming gigs planned yet."}
+      </p>
+    );
   }
   return (
     <div className="overflow-x-auto rounded-xl shadow-md ring-1 ring-gray-200 dark:ring-gray-700">

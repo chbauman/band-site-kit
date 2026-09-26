@@ -18,7 +18,13 @@ export const toISODate = (dateStr: string) => {
  * sheet's own header row and rendered as-is. */
 export type Event = Record<string, string>;
 export type EventList = Event[];
-export type DateData = { past: EventList; future: EventList };
+export type DateData = {
+  past: EventList;
+  future: EventList;
+  /** From an optional "meta" sheet's `no-gig-text` row — shown instead of
+   * the default English fallback when a list is empty. */
+  noGigText?: string;
+};
 
 export function stripMarkdownLinks(text: string) {
   return text.replace(/\[([^\]]+)\]\(https?:\/\/[^\s)]+\)/g, "$1");
@@ -73,12 +79,40 @@ function parseCSV(text: string): DateData {
 }
 
 /**
+ * Fetches a simple two-column (key, value), header-less "meta" sheet —
+ * e.g. a row `no-gig-text,Noch keine weiteren Auftritte geplant` for a
+ * custom empty-agenda message instead of the English fallback.
+ */
+async function fetchMeta(metaSheetId: string): Promise<Record<string, string>> {
+  const res = await fetch(metaSheetId);
+  const text = await res.text();
+  const rows = Papa.parse(text, { skipEmptyLines: true })
+    .data as unknown as string[][];
+  const meta: Record<string, string> = {};
+  for (const [key, value] of rows) {
+    if (key) meta[key] = value ?? "";
+  }
+  return meta;
+}
+
+/**
  * Fetches and parses a band's agenda from its public Google Sheet
- * (File > Share > Publish to web, CSV format).
+ * (File > Share > Publish to web, CSV format), optionally combined with a
+ * second "meta" sheet for a custom empty-state message.
  * Safe to call both at build time (static export) and client-side.
  */
-export async function fetchAgenda(sheetId: string): Promise<DateData> {
+export async function fetchAgenda(
+  sheetId: string,
+  metaSheetId?: string,
+): Promise<DateData> {
   const res = await fetch(sheetId);
   const text = await res.text();
-  return parseCSV(text);
+  const data = parseCSV(text);
+
+  if (metaSheetId) {
+    const meta = await fetchMeta(metaSheetId);
+    data.noGigText = meta["no-gig-text"];
+  }
+
+  return data;
 }
