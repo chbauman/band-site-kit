@@ -53,9 +53,13 @@ export default async function Home() {
 }
 ```
 
-The Google Sheet needs three columns: `Wann` (`DD.MM.YYYY`), `Wo`, `Was`.
-Cells in `Wo`/`Was` may contain a single Markdown-style link
-(`[text](https://...)`), which renders as a real link.
+The sheet's columns are free-form except one rule: **the first column must
+be a `DD.MM.YYYY` date**, used to sort into past/future. Every column
+(including that first one) is read from the sheet's own header row and
+rendered as-is, in whatever order and under whatever name the sheet uses —
+e.g. `Datum | Ort | Was | Weiteres` works exactly like `Wann | Wo | Was`.
+Any cell may contain a single Markdown-style link (`[text](https://...)`),
+which renders as a real link.
 
 ## Cover
 

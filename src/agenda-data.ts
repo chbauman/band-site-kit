@@ -12,10 +12,11 @@ export const toISODate = (dateStr: string) => {
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
 
-/** `Wann` (date) is required for sorting into past/future; any other
- * columns from the sheet (e.g. `Wo`, `Was`, `Weiteres`) are rendered as-is,
- * in whatever order the sheet defines them. */
-export type Event = { Wann: string; [column: string]: string };
+/** The sheet's columns are entirely free-form except one rule: the first
+ * column must be a `DD.MM.YYYY` date, used for sorting into past/future.
+ * Whatever that column (and every other one) is named is read from the
+ * sheet's own header row and rendered as-is. */
+export type Event = Record<string, string>;
 export type EventList = Event[];
 export type DateData = { past: EventList; future: EventList };
 
@@ -34,6 +35,13 @@ function parseCSV(text: string): DateData {
     skipEmptyLines: true,
   }).data as unknown as EventList;
 
+  if (events.length === 0) {
+    return { past: [], future: [] };
+  }
+
+  // Whichever column comes first in the sheet holds the date.
+  const dateColumn = Object.keys(events[0])[0];
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   today.setDate(today.getDate() - 1); // Also keep yesterday's events in the future list
@@ -43,7 +51,7 @@ function parseCSV(text: string): DateData {
 
   // Separate by past / future
   for (const event of events) {
-    const eventDate = parseDate(event.Wann);
+    const eventDate = parseDate(event[dateColumn]);
     if (eventDate < today) {
       pastEvents.push(event);
     } else {
@@ -53,10 +61,12 @@ function parseCSV(text: string): DateData {
 
   // Sort each list by date ascending
   pastEvents.sort(
-    (a, b) => parseDate(b.Wann).getTime() - parseDate(a.Wann).getTime(),
+    (a, b) =>
+      parseDate(b[dateColumn]).getTime() - parseDate(a[dateColumn]).getTime(),
   );
   futureEvents.sort(
-    (a, b) => parseDate(a.Wann).getTime() - parseDate(b.Wann).getTime(),
+    (a, b) =>
+      parseDate(a[dateColumn]).getTime() - parseDate(b[dateColumn]).getTime(),
   );
 
   return { past: pastEvents, future: futureEvents };
