@@ -21,6 +21,11 @@ interface CoverProps {
   backgroundImageAlt?: string;
   backgroundImageWidth?: number;
   backgroundImageHeight?: number;
+  /** Crop the background image to a fixed aspect ratio via `object-cover`
+   * instead of showing it uncropped at its natural aspect ratio, e.g.
+   * `"aspect-[7/4] md:aspect-[5/2]"` to crop the sides on narrow viewports
+   * and the top/bottom on wide ones. Omit for the uncropped default. */
+  backgroundAspectClassName?: string;
   /** Height reserved when there is no background image. */
   minHeightClassName?: string;
   /** Vertical position (as a % from the top) of the overlay content.
@@ -30,6 +35,8 @@ interface CoverProps {
    * text — for bands whose hero relies on a text title rather than a
    * wordmark logo image. */
   showTitle?: boolean;
+  /** Classes for the visible title (only used when `showTitle` is set). */
+  titleClassName?: string;
   /** Extra classes for a full-width background panel (edge-to-edge, behind
    * the title/tagline text), e.g. `"bg-white/50 py-8"` for a semi-transparent
    * band so text stays legible over a busy photo. Empty by default (no
@@ -56,9 +63,11 @@ export function Cover({
   backgroundImageAlt,
   backgroundImageWidth,
   backgroundImageHeight,
+  backgroundAspectClassName,
   minHeightClassName = "h-30 md:h-60 xl:h-110",
   overlayTopPercent = 50,
   showTitle = false,
+  titleClassName = "font-heading text-5xl sm:text-6xl md:text-7xl font-bold",
   textPanelClassName = "",
   textColorClassName = "text-white",
   imageOverlayClassName = "bg-black/50 dark:bg-black/60",
@@ -67,14 +76,28 @@ export function Cover({
     <section className="relative w-full overflow-hidden bg-black">
       <div className="relative w-full">
         {backgroundImageSrc ? (
-          <Image
-            src={backgroundImageSrc}
-            alt={backgroundImageAlt ?? ""}
-            width={backgroundImageWidth}
-            height={backgroundImageHeight}
-            priority
-            className="w-full h-auto object-contain"
-          />
+          backgroundAspectClassName ? (
+            <div
+              className={`relative w-full overflow-hidden ${backgroundAspectClassName}`}
+            >
+              <Image
+                src={backgroundImageSrc}
+                alt={backgroundImageAlt ?? ""}
+                fill
+                priority
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <Image
+              src={backgroundImageSrc}
+              alt={backgroundImageAlt ?? ""}
+              width={backgroundImageWidth}
+              height={backgroundImageHeight}
+              priority
+              className="w-full h-auto object-contain"
+            />
+          )
         ) : (
           <div className={`${minHeightClassName} mx-auto`} />
         )}
@@ -91,9 +114,7 @@ export function Cover({
               className={`max-w-6xl mx-auto px-4 text-center ${textColorClassName}`}
             >
               {showTitle ? (
-                <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold">
-                  {bandName}
-                </h1>
+                <h1 className={titleClassName}>{bandName}</h1>
               ) : (
                 <h1 className="sr-only">{bandName}</h1>
               )}
