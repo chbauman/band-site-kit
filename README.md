@@ -101,7 +101,7 @@ render `bandName` visibly and put it on a readable panel over the photo:
   backgroundImageSrc="/cover.jpg"
   backgroundImageWidth={1750}
   backgroundImageHeight={667}
-  textPanelClassName="bg-white/80 dark:bg-black/70 rounded-2xl py-8 px-6"
+  textPanelClassName="bg-white/50 dark:bg-black/50 py-8"
   textColorClassName="text-gray-900 dark:text-white"
   imageOverlayClassName="bg-black/20"
 />

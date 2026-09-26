@@ -30,9 +30,10 @@ interface CoverProps {
    * text — for bands whose hero relies on a text title rather than a
    * wordmark logo image. */
   showTitle?: boolean;
-  /** Extra classes for a background panel behind the title/tagline text,
-   * e.g. `"bg-white/80 rounded-2xl py-8 px-6"` for a semi-transparent panel
-   * so text stays legible over a busy photo. Empty by default (no panel). */
+  /** Extra classes for a full-width background panel (edge-to-edge, behind
+   * the title/tagline text), e.g. `"bg-white/50 py-8"` for a semi-transparent
+   * band so text stays legible over a busy photo. Empty by default (no
+   * panel). */
   textPanelClassName?: string;
   /** Text color for the title/tagline block. Defaults to white, which
    * assumes the dark image overlay below; override for a light panel. */
@@ -82,13 +83,13 @@ export function Cover({
         )}
 
         <div
-          className="absolute inset-x-0 z-10 px-4"
+          className="absolute inset-x-0 z-10"
           style={{ top: `${overlayTopPercent}%` }}
         >
-          <div
-            className={`max-w-6xl mx-auto text-center -translate-y-1/2 ${textColorClassName}`}
-          >
-            <div className={textPanelClassName}>
+          <div className={`-translate-y-1/2 ${textPanelClassName}`}>
+            <div
+              className={`max-w-6xl mx-auto px-4 text-center ${textColorClassName}`}
+            >
               {showTitle ? (
                 <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold">
                   {bandName}
