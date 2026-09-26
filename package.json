@@ -1,6 +1,6 @@
 {
   "name": "@emeki/band-site-kit",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Shared Next.js components for small band websites (agenda/gig list, cover, footer, section heading).",
   "type": "module",
   "license": "MIT",

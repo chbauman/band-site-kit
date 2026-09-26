@@ -12,7 +12,10 @@ export const toISODate = (dateStr: string) => {
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
 
-export type Event = { Wann: string; Wo: string; Was: string };
+/** `Wann` (date) is required for sorting into past/future; any other
+ * columns from the sheet (e.g. `Wo`, `Was`, `Weiteres`) are rendered as-is,
+ * in whatever order the sheet defines them. */
+export type Event = { Wann: string; [column: string]: string };
 export type EventList = Event[];
 export type DateData = { past: EventList; future: EventList };
 
