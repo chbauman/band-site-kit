@@ -88,23 +88,54 @@ function useAgendaData() {
   return data;
 }
 
-export function FutureEvents() {
-  const data = useAgendaData();
-  return <EventList data={data.future} noGigText={data.noGigText} />;
+interface TableSurfaceProps {
+  /** Background for the table body, e.g. `"bg-surface"` to use a
+   * site-defined token instead of the plain white/near-black default. */
+  surfaceClassName?: string;
+  /** Background for odd rows (the striping), e.g. `"odd:bg-surface-alt"`.
+   * Keep the `odd:` prefix in the value passed in. */
+  stripeClassName?: string;
 }
 
-export function PastEvents() {
+export function FutureEvents({
+  surfaceClassName,
+  stripeClassName,
+}: Readonly<TableSurfaceProps> = {}) {
   const data = useAgendaData();
-  return <EventList data={data.past} noGigText={data.noGigText} />;
+  return (
+    <EventList
+      data={data.future}
+      noGigText={data.noGigText}
+      surfaceClassName={surfaceClassName}
+      stripeClassName={stripeClassName}
+    />
+  );
+}
+
+export function PastEvents({
+  surfaceClassName,
+  stripeClassName,
+}: Readonly<TableSurfaceProps> = {}) {
+  const data = useAgendaData();
+  return (
+    <EventList
+      data={data.past}
+      noGigText={data.noGigText}
+      surfaceClassName={surfaceClassName}
+      stripeClassName={stripeClassName}
+    />
+  );
 }
 
 const EventList = ({
   data,
   noGigText,
+  surfaceClassName = "bg-white dark:bg-gray-900",
+  stripeClassName = "odd:bg-gray-50 dark:odd:bg-gray-800/50",
 }: {
   data: EventListType;
   noGigText?: string;
-}) => {
+} & TableSurfaceProps) => {
   if (data.length == 0) {
     return (
       <p className="text-center">
@@ -127,11 +158,11 @@ const EventList = ({
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white dark:bg-gray-900">
+        <tbody className={surfaceClassName}>
           {data.map((row, idx) => (
             <tr
               key={idx}
-              className="odd:bg-gray-50 dark:odd:bg-gray-800/50 hover:bg-brand/10 dark:hover:bg-brand/20 transition-colors"
+              className={`${stripeClassName} hover:bg-brand/10 dark:hover:bg-brand/20 transition-colors`}
             >
               {Object.entries(row).map((keyAndCell) => (
                 <td

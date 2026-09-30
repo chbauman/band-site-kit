@@ -49,6 +49,11 @@ interface FooterProps {
    * white-on-transparent logo to black for a light-background footer while
    * keeping it white in dark mode. */
   logoClassName?: string;
+  /** Background classes, e.g. `"bg-surface"` to use a site-defined token
+   * instead of the plain white/near-black default. Defaults to a shade that
+   * matches the page background in light mode and a neutral dark gray in
+   * dark mode. */
+  surfaceClassName?: string;
 }
 
 export function Footer({
@@ -59,9 +64,12 @@ export function Footer({
   logoWidth = 77,
   logoHeight = 50,
   logoClassName = "",
+  surfaceClassName = "bg-white dark:bg-gray-900",
 }: Readonly<FooterProps>) {
   return (
-    <footer className="w-full border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300">
+    <footer
+      className={`w-full border-t border-gray-200 dark:border-gray-700 ${surfaceClassName} text-gray-700 dark:text-gray-300`}
+    >
       <div className="max-w-5xl px-4 mx-auto py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
         <p className="text-m">
           © {new Date().getFullYear()} {copyrightName}
