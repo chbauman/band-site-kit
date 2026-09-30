@@ -70,10 +70,16 @@ export function Footer({
     <footer
       className={`w-full border-t border-gray-200 dark:border-gray-700 ${surfaceClassName} text-gray-700 dark:text-gray-300`}
     >
-      <div className="max-w-5xl px-4 mx-auto py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <p className="text-m">
-          © {new Date().getFullYear()} {copyrightName}
-        </p>
+      <div className="max-w-5xl px-4 mx-auto py-6 flex flex-col sm:flex-row items-center gap-4">
+        {/* Equal-width side columns so the logo sits at the container's
+            true center regardless of how wide the copyright text or the
+            social icons block are — `justify-between` on 3 children of
+            unequal width doesn't do that. */}
+        <div className="sm:flex-1 flex justify-center sm:justify-start">
+          <p className="text-m">
+            © {new Date().getFullYear()} {copyrightName}
+          </p>
+        </div>
         {logoSrc && (
           <Image
             src={logoSrc}
@@ -84,23 +90,25 @@ export function Footer({
             style={{ height: `${logoHeight}px`, width: "auto" }}
           />
         )}
-        <div className="flex space-x-6">
-          {links.map(({ type, href, label }) => {
-            const Icon = ICONS[type];
-            const external = !href.startsWith("mailto:");
-            return (
-              <a
-                key={type + href}
-                href={href}
-                aria-label={label ?? DEFAULT_LABELS[type]}
-                target={external ? "_blank" : undefined}
-                rel={external ? "noopener noreferrer" : undefined}
-                className="hover:text-brand transition-colors"
-              >
-                <Icon size={20} />
-              </a>
-            );
-          })}
+        <div className="sm:flex-1 flex justify-center sm:justify-end">
+          <div className="flex space-x-6">
+            {links.map(({ type, href, label }) => {
+              const Icon = ICONS[type];
+              const external = !href.startsWith("mailto:");
+              return (
+                <a
+                  key={type + href}
+                  href={href}
+                  aria-label={label ?? DEFAULT_LABELS[type]}
+                  target={external ? "_blank" : undefined}
+                  rel={external ? "noopener noreferrer" : undefined}
+                  className="hover:text-brand transition-colors"
+                >
+                  <Icon size={20} />
+                </a>
+              );
+            })}
+          </div>
         </div>
       </div>
     </footer>
