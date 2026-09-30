@@ -1,5 +1,7 @@
 # @emeki/band-site-kit
 
+[![npm version](https://img.shields.io/npm/v/@emeki/band-site-kit.svg)](https://www.npmjs.com/package/@emeki/band-site-kit)
+
 Shared Next.js (App Router) components for small band websites: a gig
 agenda backed by a public Google Sheet, a cover/hero section, a footer with
 social links, and a section heading.
