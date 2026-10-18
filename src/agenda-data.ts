@@ -12,8 +12,13 @@ export const toISODate = (dateStr: string) => {
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
 
+const NO_GIG_KEY = "no-gig-text";
+const DATE_RE = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
+
 /** The sheet's columns are entirely free-form except one rule: the first
  * column must be a `DD.MM.YYYY` date, used for sorting into past/future.
+ * The one exception is a row whose first cell is `no-gig-text`: it is not an
+ * event, its text (the next non-empty cell) is the empty-agenda message.
  * Whatever that column (and every other one) is named is read from the
  * sheet's own header row and rendered as-is. */
 export type Event = Record<string, string>;
@@ -21,8 +26,9 @@ export type EventList = Event[];
 export type DateData = {
   past: EventList;
   future: EventList;
-  /** From an optional "meta" sheet's `no-gig-text` row — shown instead of
-   * the default English fallback when a list is empty. */
+  /** From a `no-gig-text` row in the agenda table itself (or, as a fallback,
+   * an optional "meta" sheet) — shown instead of the default English
+   * fallback when a list is empty. */
   noGigText?: string;
 };
 
@@ -36,17 +42,33 @@ export function stripMarkdownLinks(text: string) {
  */
 function parseCSV(text: string): DateData {
   // Parse csv into objects
-  const events = Papa.parse(text, {
+  const rows = Papa.parse(text, {
     header: true,
     skipEmptyLines: true,
   }).data as unknown as EventList;
 
-  if (events.length === 0) {
+  if (rows.length === 0) {
     return { past: [], future: [] };
   }
 
   // Whichever column comes first in the sheet holds the date.
-  const dateColumn = Object.keys(events[0])[0];
+  const dateColumn = Object.keys(rows[0])[0];
+
+  // Rows without a date in that column are not events. A `no-gig-text` row
+  // carries the empty-agenda message; anything else is ignored.
+  const events: EventList = [];
+  let noGigText: string | undefined;
+  for (const row of rows) {
+    const key = (row[dateColumn] ?? "").trim();
+    if (DATE_RE.test(key)) {
+      events.push(row);
+    } else if (key.toLowerCase() === NO_GIG_KEY) {
+      noGigText = Object.entries(row)
+        .filter(([column]) => column !== dateColumn)
+        .map(([, value]) => (value ?? "").trim())
+        .find((value) => value !== "");
+    }
+  }
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -75,7 +97,7 @@ function parseCSV(text: string): DateData {
       parseDate(a[dateColumn]).getTime() - parseDate(b[dateColumn]).getTime(),
   );
 
-  return { past: pastEvents, future: futureEvents };
+  return { past: pastEvents, future: futureEvents, noGigText };
 }
 
 /**
@@ -111,7 +133,7 @@ export async function fetchAgenda(
 
   if (metaSheetId) {
     const meta = await fetchMeta(metaSheetId);
-    data.noGigText = meta["no-gig-text"];
+    data.noGigText ??= meta[NO_GIG_KEY];
   }
 
   return data;

@@ -63,9 +63,20 @@ e.g. `Datum | Ort | Was | Weiteres` works exactly like `Wann | Wo | Was`.
 Any cell may contain a single Markdown-style link (`[text](https://...)`),
 which renders as a real link.
 
-Optionally pass `metaSheetId` (to `fetchAgenda` and `AgendaProvider`) for a
-second, header-less, two-column (key, value) sheet to customize the
-empty-state message with a `no-gig-text` row:
+To customize the message shown when a list is empty (default: "No upcoming
+gigs planned yet."), add a row to the table itself whose first cell is
+`no-gig-text` and whose next non-empty cell is the text:
+
+| Wann | Wo | Was |
+| --- | --- | --- |
+| 27.09.2026 | Herblingen | Herblinger Chilbi |
+| no-gig-text | Zurzeit keine weiteren Auftritte geplant. | |
+
+Rows whose first cell is not a `DD.MM.YYYY` date are never shown as events.
+
+Alternatively, pass `metaSheetId` (to `fetchAgenda` and `AgendaProvider`) for
+a second, header-less, two-column (key, value) sheet with a `no-gig-text`
+row. A `no-gig-text` row in the table takes precedence over the meta sheet.
 
 ```tsx
 const META_URL = "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv";
